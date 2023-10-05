@@ -77,13 +77,13 @@ public:
         bool isDeleteItBegin = false;
 
         // Check if keyBegin is equal to std::prev(itBegin)->first,
-        // as we know if it is <= to keyBegin
+        // as we know that the latter is <= to keyBegin
         if (itBegin != m_map.begin() && !(std::prev(itBegin)->first < keyBegin))
         {
             itBegin--;
         }
 
-        if (itBegin == m_map.begin()) { // should not be possible
+        if (itBegin == m_map.begin()) {
             auto res = m_map.insert_or_assign(keyBegin, val);
             itBegin = res.first;
             isDeleteItBegin = isValEqValBegin;
@@ -97,7 +97,7 @@ public:
 
             V valTrailing = (std::prev(itBegin))->second;
             m_map[keyBegin] = val;
-            m_map[keyEnd] = valTrailing;
+            m_map[keyEnd] = std::move(valTrailing);
             return;
         }
         else {  // itBegin is somewhere in the middle of m_map
@@ -111,7 +111,7 @@ public:
             }
         }
 
-        // Remove all entries with key K in m_map where keyBegin < K < keyEnd.
+        // Remove all entries with key K in m_map where keyBegin < K < upperbound(keyEnd).
         for (auto it = (isDeleteItBegin? itBegin : std::next(itBegin)); it != itEnd;)
         {
             it = m_map.erase(it);
@@ -119,7 +119,7 @@ public:
 
         if (val != valEnd)
         {
-            m_map.insert_or_assign(keyEnd, valEnd);
+            m_map.insert_or_assign(keyEnd, std::move(valEnd));
         }
     }
 
