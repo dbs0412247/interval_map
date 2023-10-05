@@ -65,6 +65,14 @@ public:
         auto itBegin = m_map.upper_bound(keyBegin);
         bool isDeleteItBegin = false;
 
+        // Check if keyBegin is equal to std::prev(itBegin)->first,
+        // as we know if it is <= to keyBegin
+        if (itBegin != m_map.begin() && !(std::prev(itBegin)->first < keyBegin))
+        {
+            itBegin--;
+        }
+
+
         if (itBegin == m_map.begin()) {
             auto res = m_map.insert_or_assign(keyBegin, val);
             itBegin = res.first;
@@ -241,17 +249,10 @@ void BruteForceTest()
     {
         std::cout << "All canonical!" << std::endl;
     }
-    else
-    {
-        for (auto it = vecNotCanonical.begin(); it != vecNotCanonical.end(); it++)
-        {
-            std::cout << *it << std::endl;
-        }
-    }
 }
 
 int main()
 {
-    //BruteForceTest();
-    RunTest(3,4,'A');
+    BruteForceTest();
+    //RunTest(3,4,'A');
 }
