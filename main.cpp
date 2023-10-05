@@ -61,7 +61,18 @@ public:
             return;
         }
 
-        V valEnd = this->operator[](keyEnd);
+        auto itEnd = m_map.upper_bound(keyEnd);
+        V valEnd = (itEnd == m_map.begin()? m_valBegin : (std::prev(itEnd))->second);
+
+        if (itEnd == m_map.begin()) // both itBegin and itEnd are before the first element
+        {
+            if  (!isValEqValBegin) {
+                m_map.insert_or_assign(keyBegin, val);
+                m_map.insert_or_assign(keyEnd, m_valBegin);
+            }
+            return;
+        }
+
         auto itBegin = m_map.upper_bound(keyBegin);
         bool isDeleteItBegin = false;
 
@@ -72,8 +83,7 @@ public:
             itBegin--;
         }
 
-
-        if (itBegin == m_map.begin()) {
+        if (itBegin == m_map.begin()) { // should not be possible
             auto res = m_map.insert_or_assign(keyBegin, val);
             itBegin = res.first;
             isDeleteItBegin = isValEqValBegin;
@@ -99,17 +109,6 @@ public:
                 auto res = m_map.insert_or_assign(keyBegin, val);
                 itBegin = res.first;
             }
-        }
-
-        // Now figure out where itEnd is.
-        auto itEnd = m_map.upper_bound(keyEnd);
-
-        if (itEnd == m_map.begin()) // both itBegin and itEnd are before the first element
-        {
-            if  (!isValEqValBegin) {
-                m_map.insert_or_assign(keyEnd, m_valBegin);
-            }
-            return;
         }
 
         // Remove all entries with key K in m_map where keyBegin < K < keyEnd.
@@ -251,8 +250,111 @@ void BruteForceTest()
     }
 }
 
+bool RunTest2(int keyBegin, int keyEnd, char val)
+{
+    char outputExpected[13];
+
+    interval_map<int, char> test_map('A');
+    for (int i = 0; i < 13; i++)
+    {
+        outputExpected[i] = 'A';
+    }
+
+    test_map.assign(3, 5, 'B');
+    for (int i = 3; i < 5; i++)
+    {
+        outputExpected[i] = 'B';
+    }
+
+    test_map.assign(5, 7, 'C');
+    for (int i = 5; i < 7; i++)
+    {
+        outputExpected[i] = 'C';
+    }
+
+    test_map.assign(7, 9, 'B');
+    for (int i = 7; i < 9; i++)
+    {
+        outputExpected[i] = 'B';
+    }
+
+    test_map.assign(keyBegin, keyEnd, val);
+    for (int i = keyBegin; i < keyEnd; i++)
+    {
+        outputExpected[i] = val;
+    };
+
+    bool isFailed = false;
+    for (int i = 0; i < 13; i++)
+    {
+        if (outputExpected[i] != test_map[i])
+        {
+            isFailed = true;
+            break;
+        }
+    }
+
+    if (isFailed)
+    {
+        std::cout << "RunTest(" << keyBegin << "," << keyEnd << ",\'" << val << "\') found mismatched output:" << std::endl;
+        for (int i = 0; i < 13; i++)
+        {
+            std::cout << i;
+        }
+        std::cout << std::endl;
+        for (int i = 0; i < 13; i++)
+        {
+            std::cout << outputExpected[i];
+        }
+        std::cout << std::endl;
+        for (int i = 0; i < 13; i++)
+        {
+            std::cout << test_map[i];
+        }
+        std::cout << std::endl;
+
+        test_map.print();
+
+        std::cout << std::endl;
+    }
+
+    if (!test_map.isCanonical())
+    {
+        std::cout << "RunTest(" << keyBegin << "," << keyEnd << ",\'" << val << "\') is non-canonical:" << std::endl;
+        test_map.print();
+    }
+
+    return test_map.isCanonical();
+}
+
+void BruteForceTest2()
+{
+    std::vector<std::string> vecNotCanonical;
+
+    for (int i = 1; i <= 13; i++)
+    {
+        for (int j = 1; j <= 13; j++)
+        {
+            for (char c = 'A'; c <= 'D'; c++)
+            {
+                if (!RunTest2(i, j, c))
+                {
+                    vecNotCanonical.push_back("RunTest2(" + std::to_string(i) + "," + std::to_string(j) + ",\'" + c + "\') is not canonical");
+                }
+            }
+        }
+    }
+
+    if (vecNotCanonical.empty())
+    {
+        std::cout << "All canonical 2!" << std::endl;
+    }
+}
+
+
 int main()
 {
-    BruteForceTest();
-    //RunTest(3,4,'A');
+    //BruteForceTest();
+    BruteForceTest2();
+    //RunTest2(11,11,'A');
 }
