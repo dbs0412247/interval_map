@@ -63,12 +63,12 @@ public:
 
         V valEnd = this->operator[](keyEnd);
         auto itBegin = m_map.upper_bound(keyBegin);
+        bool isDeleteItBegin = false;
 
         if (itBegin == m_map.begin()) {
-            if  (!isValEqValBegin) {
-                auto res = m_map.insert_or_assign(keyBegin, val);
-                itBegin = res.first;
-            }
+            auto res = m_map.insert_or_assign(keyBegin, val);
+            itBegin = res.first;
+            isDeleteItBegin = isValEqValBegin;
         }
         else if (itBegin == m_map.end()) {
 
@@ -105,7 +105,7 @@ public:
         }
 
         // Remove all entries with key K in m_map where keyBegin < K < keyEnd.
-        for (auto it = std::next(itBegin); it != itEnd;)
+        for (auto it = (isDeleteItBegin? itBegin : std::next(itBegin)); it != itEnd;)
         {
             it = m_map.erase(it);
         }
@@ -210,6 +210,12 @@ bool RunTest(int keyBegin, int keyEnd, char val)
         std::cout << std::endl;
     }
 
+    if (!test_map.isCanonical())
+    {
+        std::cout << "RunTest(" << keyBegin << "," << keyEnd << ",\'" << val << "\') is non-canonical:" << std::endl;
+        test_map.print();
+    }
+
     return test_map.isCanonical();
 }
 
@@ -246,6 +252,6 @@ void BruteForceTest()
 
 int main()
 {
-    BruteForceTest();
-    //RunTest(1,4,'A');
+    //BruteForceTest();
+    RunTest(3,4,'A');
 }
