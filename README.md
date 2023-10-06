@@ -3,7 +3,7 @@ This is a coding test for a company interview done in 2023.
 I unfortunately did not secure a follow-up, due to the code being auto rejected for
 using unsupported operators on `K` or `V`. The example the coding test page gave
 mentioned using the default constructors of `m_map[key] = value;`.
-See the comments in `main.cpp` for a description of the limited operators on `K`` and `V``.
+See the comments in `main.cpp` for a description of the limited operators on `K` and `V`.
 
 Anyways, the overall problem is to implement the `assign()` function for the
 `interval_map<K,V>` class, which is built on top of a `std::map<K,V> m_map` and `V m_valBegin`.
