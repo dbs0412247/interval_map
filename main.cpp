@@ -97,7 +97,7 @@ public:
 
             V valTrailing = (std::prev(itBegin))->second;
             m_map[keyBegin] = val;
-            m_map[keyEnd] = std::move(valTrailing);
+            m_map[keyEnd] = valTrailing;
             return;
         }
         else {  // itBegin is somewhere in the middle of m_map
@@ -119,7 +119,7 @@ public:
 
         if (val != valEnd)
         {
-            m_map.insert_or_assign(keyEnd, std::move(valEnd));
+            m_map.insert_or_assign(keyEnd, valEnd);
         }
     }
 
